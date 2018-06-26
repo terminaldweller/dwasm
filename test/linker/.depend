@@ -1,0 +1,2 @@
+file0.o: file0.c file1.c
+file1.o: file1.c
