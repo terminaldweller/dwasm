@@ -1,0 +1,7 @@
+[
+    {
+        "command": "c++ -c -std=c++11 -o dwasm.o dwasm.cpp", 
+        "directory": "/home/bloodstalker/extra/dwasm/dwasm-cpp", 
+        "file": "/home/bloodstalker/extra/dwasm/dwasm-cpp/dwasm.cpp"
+    }
+]
