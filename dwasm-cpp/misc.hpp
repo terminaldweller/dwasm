@@ -19,21 +19,32 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.*/
 /**********************************************************************************************************************/
 #include <cstddef>
-#include <fstream>
-#include <iostream>
-#include <string>
 #include <vector>
-#include "dwasm.hpp"
-#include "misc.hpp"
-#include "wasm.h"
 /**********************************************************************************************************************/
-int main (int argc, char** argv) {
-  std::string path = "../test/injected.wasm";
-  std::ifstream wasm(path, std::ios_base::binary);
-  read_header(wasm);
-  //dump_file(wasm);
+int read_header(std::ifstream& wasm) {
+  char head[4];
+  wasm.read(head, sizeof(uint32_t));
+  std::cout << head[0] << head[1] << head[2] << head[3] << "\n";
+  wasm.read(head, sizeof(uint32_t));
+  std::cout << (int)(head[0]) << (int)(head[1]) << (int)(head[2]) << (int)(head[3]) << "\n";
   return 0;
 }
+
+int dump_file(std::ifstream& wasm) {
+  while (wasm) {
+    std::ios::pos_type before = wasm.tellg();
+    uint8_t x;
+    wasm >> x;
+    std::ios::pos_type after = wasm.tellg();
+    std::cout << std::hex << static_cast<int>(x) << "\n";
+  }
+  return 0;
+}
+
+int leb128_u_d(std::vector<unsigned char> in) {}
+int leb128_s_d(std::vector<unsigned char> in) {}
+std::vector<unsigned char> leb128_u_e() {}
+std::vector<unsigned char> leb128_s_e() {}
 /**********************************************************************************************************************/
 /*last line intentionally left blank.*/
 

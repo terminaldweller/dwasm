@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.*
 #include <algorithm>
 #include <map>
 #include <vector>
-
+/**********************************************************************************************************************/
 #ifndef _WASM_HPP
 #define _WASM_HPP
 #define MAGIC_NUMBER 0x6d736100
