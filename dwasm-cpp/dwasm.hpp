@@ -18,6 +18,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.*/
 /**********************************************************************************************************************/
+#include <algorithm>
 #include <map>
 #include <vector>
 
@@ -25,21 +26,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.*
 #define _WASM_HPP
 #define MAGIC_NUMBER 0x6d736100
 #define PAGE_SIZE 65536
-class enum section_id_t {custom, type, import, function, table, memory, global, export, start, element, code, data, unknown};
-class enum relocation_type_t {R_WEBASSEMBLY_FUNCTION_INDEX_LEB, R_WEBASSEMBLY_TABLE_INDEX_SLEB, 
+enum class section_id_t {custom, type, import, func, table, memory, global, exp, start, element, code, data, unknown};
+enum class relocation_type_t {R_WEBASSEMBLY_FUNCTION_INDEX_LEB, R_WEBASSEMBLY_TABLE_INDEX_SLEB, 
   R_WEBASSEMBLY_TABLE_INDEX_I32, R_WEBASSEMBLY_MEMORY_ADDR_LEB, R_WEBASSEMBLY_MEMORY_ADDR_SLEB, 
   R_WEBASSEMBLY_MEMORY_ADDR_I32, R_WEBASSEMBLY_TYPE_INDEX_LEB, R_WEBASSEMBLY_GLOBAL_INDEX_LEB, 
   R_WEBASSEMPLY_FUNCTION_OFFSET_I32, R_WEBASSEMBLY_SECTION_OFFSET_I32};
-class enum linking_subsection_t {WASM_SEGMENT_INFO, WASM_INIT_FUNCS, WASM_COMDAT_INFO, WASM_SYMBOL_TABLE};
-class enum syminfo_kind_t {SYMTAB_FUNCTION, SYMTAB_DATA, SYMTAB_GLOBAL, SYMTAB_SECTION};
-class enum w_type_t {uint8, uint16, uint32, uint64, 
+enum class linking_subsection_t {WASM_SEGMENT_INFO, WASM_INIT_FUNCS, WASM_COMDAT_INFO, WASM_SYMBOL_TABLE};
+enum class syminfo_kind_t {SYMTAB_FUNCTION, SYMTAB_DATA, SYMTAB_GLOBAL, SYMTAB_SECTION};
+enum class w_type_t {uint8, uint16, uint32, uint64, 
   varuint1, varuint7, varuint32, varuint64, varint1, 
   varint7, varint32, varint64, floatt, doublet};
 struct wasm_op_t {
   wasm_op_t(std::string _mnemonic, bool _has_opnd, std::vector<w_type_t> _opnd_types) {
     mnemonic = _mnemonic;
     has_opnd = _has_opnd;
-    std::for_each{_opnd_types.begin(), _opnd_types.end(), [](w_type_t __t){opnd_types.push_back(__t);}};
+    std::for_each(_opnd_types.begin(), _opnd_types.end(), [this](w_type_t __t){this->opnd_types.push_back(__t);});
   }
   std::string mnemonic;
   bool has_opnd;
@@ -56,53 +57,53 @@ std::map<uint8_t, wasm_op_t> wasm_opcodes = {
   //{0x40, wasm_op_t{"empty_block_type", false, {}}},
   {0x00, wasm_op_t{"unreachable", false, {}}},
   {0x01, wasm_op_t{"nop", false, {}}},
-  {0x02, wasm_op_t{"block", true, {w_type_t.varuint7}}},
-  {0x03, wasm_op_t{"loop", true, {w_type_t.varuint7}}},
-  {0x04, wasm_op_t{"if", true, {w_type_t.varuint7}}},
+  {0x02, wasm_op_t{"block", true, {w_type_t::varuint7}}},
+  {0x03, wasm_op_t{"loop", true, {w_type_t::varuint7}}},
+  {0x04, wasm_op_t{"if", true, {w_type_t::varuint7}}},
   {0x05, wasm_op_t{"else", false, {}}},
   {0x0b, wasm_op_t{"end", false, {}}},
-  {0x0c, wasm_op_t{"br", true, {w_type_t.varuint32}}},
-  {0x0d, wasm_op_t{"br_if", true, {w_type_t.varuint32}}},
-  {0x0e, wasm_op_t{"br_table", true, {w_type_t.varuint32, w_type_t.varuint32, w_type_t.varuint32}}},
+  {0x0c, wasm_op_t{"br", true, {w_type_t::varuint32}}},
+  {0x0d, wasm_op_t{"br_if", true, {w_type_t::varuint32}}},
+  {0x0e, wasm_op_t{"br_table", true, {w_type_t::varuint32, w_type_t::varuint32, w_type_t::varuint32}}},
   {0x0f, wasm_op_t{"return", false, {}}},
-  {0x10, wasm_op_t{"call", true, {w_type_t.varuint32}}},
-  {0x11, wasm_op_t{"call_indirect", true, {w_type_t.varuint32, w_type_t.varuint1}}},
+  {0x10, wasm_op_t{"call", true, {w_type_t::varuint32}}},
+  {0x11, wasm_op_t{"call_indirect", true, {w_type_t::varuint32, w_type_t::varuint1}}},
   {0x1a, wasm_op_t{"drop", false, {}}},
   {0x1b, wasm_op_t{"select", false, {}}},
-  {0x20, wasm_op_t{"get_local", true, {w_type_t.varuint32}}},
-  {0x21, wasm_op_t{"set_local", true, {w_type_t.varuint32}}},
-  {0x22, wasm_op_t{"tee_local", true, {w_type_t.varuint32}}},
-  {0x23, wasm_op_t{"get_global", true, {w_type_t.varuint32}}},
-  {0x24, wasm_op_t{"set_global", true, {w_type_t.varuint32}}},
-  {0x28, wasm_op_t{"i32.load", true, {w_type_t.varuint32, w_type_t.varuint32}}},
-  {0x29, wasm_op_t{"i64.load", true, {w_type_t.varuint32, w_type_t.varuint32}}},
-  {0x2a, wasm_op_t{"f32.load", true, {w_type_t.varuint32, w_type_t.varuint32}}},
-  {0x2b, wasm_op_t{"f64.load", true, {w_type_t.varuint32, w_type_t.varuint32}}},
-  {0x2c, wasm_op_t{"i32.load8_s", true, {w_type_t.varuint32, w_type_t.varuint32}}},
-  {0x2d, wasm_op_t{"i32.load8_u", true, {w_type_t.varuint32, w_type_t.varuint32}}},
-  {0x2e, wasm_op_t{"i32.load16_s", true, {w_type_t.varuint32, w_type_t.varuint32}}},
-  {0x2f, wasm_op_t{"i32.load16_u", true, {w_type_t.varuint32, w_type_t.varuint32}}},
-  {0x30, wasm_op_t{"i64.load8_s", true, {w_type_t.varuint32, w_type_t.varuint32}}},
-  {0x31, wasm_op_t{"i64.load8_u", true, {w_type_t.varuint32, w_type_t.varuint32}}},
-  {0x32, wasm_op_t{"i64.load16_s", true, {w_type_t.varuint32, w_type_t.varuint32}}},
-  {0x33, wasm_op_t{"i64.load16_u", true, {w_type_t.varuint32, w_type_t.varuint32}}},
-  {0x34, wasm_op_t{"i64.load32_s", true, {w_type_t.varuint32, w_type_t.varuint32}}},
-  {0x35, wasm_op_t{"i64.load32_u", true, {w_type_t.varuint32, w_type_t.varuint32}}},
-  {0x36, wasm_op_t{"i32.store", true, {w_type_t.varuint32, w_type_t.varuint32}}},
-  {0x37, wasm_op_t{"i64.store", true, {w_type_t.varuint32, w_type_t.varuint32}}},
-  {0x38, wasm_op_t{"f32.store", true, {w_type_t.varuint32, w_type_t.varuint32}}},
-  {0x39, wasm_op_t{"f64.store", true, {w_type_t.varuint32, w_type_t.varuint32}}},
-  {0x3a, wasm_op_t{"i32.store8", true, {w_type_t.varuint32, w_type_t.varuint32}}},
-  {0x3b, wasm_op_t{"i32.store16", true, {w_type_t.varuint32, w_type_t.varuint32}}},
-  {0x3c, wasm_op_t{"i64.store8", true, {w_type_t.varuint32, w_type_t.varuint32}}},
-  {0x3d, wasm_op_t{"i64.store16", true, {w_type_t.varuint32, w_type_t.varuint32}}},
-  {0x3e, wasm_op_t{"i64.store32", true, {w_type_t.varuint32, w_type_t.varuint32}}},
-  {0x3f, wasm_op_t{"current_memory", true, {w_type_t.varuint1}}},
-  {0x40, wasm_op_t{"grow_memory", true, {w_type_t.varuint1}}},
-  {0x41, wasm_op_t{"i32.const", true, {w_type_t.varint32}}},
-  {0x42, wasm_op_t{"i64.const", true, {w_type_t.varint64}}},
-  {0x43, wasm_op_t{"f32.const", true, {w_type_t.uint32}}},
-  {0x44, wasm_op_t{"f64.const", true, {w_type_t.uint64}}},
+  {0x20, wasm_op_t{"get_local", true, {w_type_t::varuint32}}},
+  {0x21, wasm_op_t{"set_local", true, {w_type_t::varuint32}}},
+  {0x22, wasm_op_t{"tee_local", true, {w_type_t::varuint32}}},
+  {0x23, wasm_op_t{"get_global", true, {w_type_t::varuint32}}},
+  {0x24, wasm_op_t{"set_global", true, {w_type_t::varuint32}}},
+  {0x28, wasm_op_t{"i32.load", true, {w_type_t::varuint32, w_type_t::varuint32}}},
+  {0x29, wasm_op_t{"i64.load", true, {w_type_t::varuint32, w_type_t::varuint32}}},
+  {0x2a, wasm_op_t{"f32.load", true, {w_type_t::varuint32, w_type_t::varuint32}}},
+  {0x2b, wasm_op_t{"f64.load", true, {w_type_t::varuint32, w_type_t::varuint32}}},
+  {0x2c, wasm_op_t{"i32.load8_s", true, {w_type_t::varuint32, w_type_t::varuint32}}},
+  {0x2d, wasm_op_t{"i32.load8_u", true, {w_type_t::varuint32, w_type_t::varuint32}}},
+  {0x2e, wasm_op_t{"i32.load16_s", true, {w_type_t::varuint32, w_type_t::varuint32}}},
+  {0x2f, wasm_op_t{"i32.load16_u", true, {w_type_t::varuint32, w_type_t::varuint32}}},
+  {0x30, wasm_op_t{"i64.load8_s", true, {w_type_t::varuint32, w_type_t::varuint32}}},
+  {0x31, wasm_op_t{"i64.load8_u", true, {w_type_t::varuint32, w_type_t::varuint32}}},
+  {0x32, wasm_op_t{"i64.load16_s", true, {w_type_t::varuint32, w_type_t::varuint32}}},
+  {0x33, wasm_op_t{"i64.load16_u", true, {w_type_t::varuint32, w_type_t::varuint32}}},
+  {0x34, wasm_op_t{"i64.load32_s", true, {w_type_t::varuint32, w_type_t::varuint32}}},
+  {0x35, wasm_op_t{"i64.load32_u", true, {w_type_t::varuint32, w_type_t::varuint32}}},
+  {0x36, wasm_op_t{"i32.store", true, {w_type_t::varuint32, w_type_t::varuint32}}},
+  {0x37, wasm_op_t{"i64.store", true, {w_type_t::varuint32, w_type_t::varuint32}}},
+  {0x38, wasm_op_t{"f32.store", true, {w_type_t::varuint32, w_type_t::varuint32}}},
+  {0x39, wasm_op_t{"f64.store", true, {w_type_t::varuint32, w_type_t::varuint32}}},
+  {0x3a, wasm_op_t{"i32.store8", true, {w_type_t::varuint32, w_type_t::varuint32}}},
+  {0x3b, wasm_op_t{"i32.store16", true, {w_type_t::varuint32, w_type_t::varuint32}}},
+  {0x3c, wasm_op_t{"i64.store8", true, {w_type_t::varuint32, w_type_t::varuint32}}},
+  {0x3d, wasm_op_t{"i64.store16", true, {w_type_t::varuint32, w_type_t::varuint32}}},
+  {0x3e, wasm_op_t{"i64.store32", true, {w_type_t::varuint32, w_type_t::varuint32}}},
+  {0x3f, wasm_op_t{"current_memory", true, {w_type_t::varuint1}}},
+  {0x40, wasm_op_t{"grow_memory", true, {w_type_t::varuint1}}},
+  {0x41, wasm_op_t{"i32.const", true, {w_type_t::varint32}}},
+  {0x42, wasm_op_t{"i64.const", true, {w_type_t::varint64}}},
+  {0x43, wasm_op_t{"f32.const", true, {w_type_t::uint32}}},
+  {0x44, wasm_op_t{"f64.const", true, {w_type_t::uint64}}},
   {0x45, wasm_op_t{"i32.eqz", false, {}}},
   {0x46, wasm_op_t{"i32.eq", false, {}}},
   {0x47, wasm_op_t{"i32.ne", false, {}}},

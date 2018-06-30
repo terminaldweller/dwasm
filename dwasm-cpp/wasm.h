@@ -1,7 +1,7 @@
 
-/***************************************************Project Mutator****************************************************/
+/**********************************************************************************************************************/
 /*first line intentionally left blank.*/
-/*bruiser's wasm interface implementation*/
+/*wasm interpreter*/
 /*Copyright (C) 2018 Farzad Sadeghi
 
 This program is free software; you can redistribute it and/or
