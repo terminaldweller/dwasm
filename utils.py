@@ -280,15 +280,23 @@ def dumpprettysections(sections_list, width, section_name):
             print(Colors.green + "length: " + Colors.blue + repr(section[2]) + Colors.ENDC)
             print(Colors.green + "is custom section: " + Colors.blue + repr(section[3]) + Colors.ENDC)
             print(Colors.green + "name length: " + Colors.blue + repr(section[4]) + Colors.ENDC)
-            print(Colors.green + "name: " + Colors.blue + section[5] + Colors.ENDC)
+
+            #print(section[5])
+            #print(''.join(chr(char) for char in section[5]))
+            #print( ''.join([chr(char) for char in section[5]]))
+
+            if type(section[5]) == list:
+                print(Colors.green + "name: " + Colors.blue + ''.join([chr(char) for char in section[5]]) + Colors.ENDC)
+            else:
+                print(Colors.green + "name: " + Colors.blue + section[5] + Colors.ENDC)
             print("\t", end="")
             for offset in range(0, width):
                 if offset <= 15:
-                    print(Colors.yellow + hex(offset) + "  " + Colors.ENDC, end="")
+                    print(Colors.blue + hex(offset) + "  " + Colors.ENDC, end="")
                 else:
-                    print(Colors.yellow + hex(offset) + " " + Colors.ENDC, end="")
+                    print(Colors.blue + hex(offset) + " " + Colors.ENDC, end="")
             print()
-            print(Colors.yellow + Colors.BOLD + hex(section_offset) + "\t" + Colors.ENDC, end="")
+            print(Colors.blue + Colors.BOLD + hex(section_offset) + "\t" + Colors.ENDC, end="")
             for byte in section[6]:
                 if line_counter == width:
                     section_offset += width
@@ -296,11 +304,11 @@ def dumpprettysections(sections_list, width, section_name):
                     line_counter = 0
                     for char in str_list:
                         print(Colors.green + "|" + Colors.ENDC, end="")
-                        if ord(char) < 32: print(" ", end="")
+                        if ord(char) < 32 or ord(char) > 127: print(" ", end="")
                         else:  print(char, end="")
                     str_list = []
                     print()
-                    print(Colors.yellow + Colors.BOLD + hex(section_offset) + "\t" + Colors.ENDC, end="")
+                    print(Colors.blue + Colors.BOLD + hex(section_offset) + "\t" + Colors.ENDC, end="")
                 print(format(byte, '02x') + "   ", end="")
                 str_list.append(chr(byte))
                 line_counter += 1

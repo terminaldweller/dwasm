@@ -125,12 +125,19 @@ def ReadWASM(file_path, endianness, is_extended_isa, dbg):
             name_len, offset, dummy = Read(temp_obj_file, offset, 'varuint32')
             name = temp_obj_file[offset : offset + name_len]
             offset += name_len
+            '''
+            if type(name) == list:
+                print(''.join([chr(elem) for elem in name]))
+                name = ''.join([chr(elem) for elem in name])
+            else:
+                print(name)
             if name.find("reloc", 0, 5) == 0:
                 is_reloc_section = True
                 reloc_entry_count = Read(temp_obj_file, offset, 'varuint32')
                 for i in range(0, reloc_entry_count):
                     reloc_entry, offset, dummy = Read(tmp_obj, offset, 'varuint32')
                     reloc_entries.append(reloc_entry)
+                    '''
         else:
             is_custom_section = False
             name_len = 0
