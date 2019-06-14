@@ -858,8 +858,22 @@ class PythonInterpreter(object):
                 print(Colors.green + 'module str: ' + repr(iter.module_str) + Colors.ENDC)
                 print(Colors.red + 'field length: ' + repr(iter.field_len) + Colors.ENDC)
                 print(Colors.purple + 'field str: ' + repr(iter.field_str) + Colors.ENDC)
+                print(Colors.purple + 'field str: ' + ''.join([chr(elem) for elem in iter.field_str]) + Colors.ENDC)
                 print(Colors.yellow + 'kind: ' + repr(iter.kind) + Colors.ENDC)
                 print(Colors.grey + 'type: ' + repr(iter.type) + Colors.ENDC)
+                if (type(iter.type) == Table_Type):
+                    print('element_type: ' + repr(iter.type.element_type))
+                    print('limit: ' + repr(iter.type.limit))
+                    print('flags: ' + repr(iter.type.limit.flags))
+                    print('initial: ' + repr(iter.type.limit.initial))
+                    print('maximum: ' + repr(iter.type.limit.maximum))
+                if (type(iter.type) == Global_Type):
+                    print('value_type: ' + repr(iter.type.content_type))
+                    print('mutability: ' + repr(iter.type.mutability))
+                if (type(iter.type) == Memory_Type):
+                    print('flags: ' + repr(iter.type.limits.flags))
+                    print('flags: ' + repr(iter.type.limits.initial))
+                    print('flags: ' + repr(iter.type.limits.maximum))
 
         # function_section
         if module.function_section is not None and (dbgsection == "function" or all):
