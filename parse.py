@@ -3,15 +3,12 @@
 from __future__ import print_function
 import argparse
 import sys
-import re
 from section_structs import *
 from utils import *
 from opcodes import *
 from copy import deepcopy
 from init import *
-import readline
 import code
-import signal
 
 _DBG_ = True
 
@@ -224,8 +221,6 @@ class ObjReader(object):
                 temp_wasm_ins.opcodeint = int(byte, 16)
                 #temp_wasm_ins.operands = instruction
                 temp_wasm_ins.operands = operands
-                instruction = str()
-                operands = []
                 break
 
         read_bytes += read_bytes_temp
@@ -719,24 +714,22 @@ class ObjReader(object):
         return(SS)
 
     def ReadRelocationSection(self):
-        offset = 0
         section_exists = False
         RS = Relocation_Section()
         for whatever in self.parsedstruct.section_list:
             if whatever[0] == 0 and whatever[1] == "reloc":
-                reloc_section = whatever.copy()
+                #reloc_section = whatever.copy()
                 section_exists = True
         if not section_exists:
             return None
         return(RS)
 
     def ReadNameSection(self):
-        offset = 0
         section_exists = False
         NS = Name_Section()
         for whatever in self.parsedstruct.section_list:
             if whatever[0] == 0 and whatever[1] == "name":
-                name_section = whatever.copy()
+                #name_section = whatever.copy()
                 section_exists = True
         if not section_exists:
             return None
@@ -998,7 +991,6 @@ def premain(argparser):
                 interpreter.dump_sections(module, argparser.args.dbgsection)
             if interpreter.runValidations():
                 print(Colors.red + "validations are not implemented yet" + Colors.ENDC)
-                pass
             else:
                 print(Colors.red + 'failed validation tests' + Colors.ENDC)
             vm = VM(interpreter.getmodules())

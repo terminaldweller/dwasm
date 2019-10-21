@@ -30,7 +30,7 @@ class Execute(): # pragma: no cover
         return self.op_gas
 
     def chargeGasMem(self, mem_size_page):
-        factor = 64
+        #factor = 64
         self.op_gas += 64 * mem_size_page
 
     def chargeGas(self, opcodeint):
@@ -38,7 +38,6 @@ class Execute(): # pragma: no cover
             self.op_gas += 1
         else:
             chargeGasMem()
-            pass
 
     def getInstruction(self, opcodeint, immediates):
         self.opcodeint = opcodeint
@@ -56,7 +55,7 @@ class Execute(): # pragma: no cover
         except IndexError:
             # trap
             print(Colors.red + 'bad stack access.' + Colors.ENDC)
-            val2 = self.machinestate.Stack_Omni.pop()
+            #val2 = self.machinestate.Stack_Omni.pop()
 
 
     def instructionUnwinder(self, opcodeint, immediates, machinestate):
@@ -296,8 +295,8 @@ class Execute(): # pragma: no cover
         if len(self.machinestate.Stack_Omni) < 1:
             print(Colors.red + "the value stack does not have enough values." + Colors.ENDC)
             # exit 1
-        val = self.machinestate.Stack_Omni.pop()
-        label = self.machinestate.Stack_Label.pop()
+        #val = self.machinestate.Stack_Omni.pop()
+        #label = self.machinestate.Stack_Label.pop()
 
     def run_br_if(self, opcodeint, immediates):
         val = self.machinestate.Stack_Omni.pop()
@@ -360,40 +359,40 @@ class Execute(): # pragma: no cover
         elif opcodeint == 44:
             temp = np.int8(self.machinestate.Linear_Memory[0][int(immediates[1])])
             temp2 = (temp & 0x0000007f) | ((temp & 0x80) << 24)
-            self.machinestate.append(np.int32(tmep2))
+            self.machinestate.append(np.int32(temp2))
         elif opcodeint == 45:
             temp = np.int8(self.machinestate.Linear_Memory[0][int(immediates[1])])
             temp2 = temp & 0x000000ff
-            self.machinestate.append(np.uint32(tmep2))
+            self.machinestate.append(np.uint32(temp2))
         elif opcodeint == 46:
             temp = np.int8(self.machinestate.Linear_Memory[0][int(immediates[1]):int(immediates[1] + 2)])
             temp2 = (temp & 0x00007fff) | ((temp & 0x8000) << 16)
-            self.machinestate.append(np.int32(tmep2))
+            self.machinestate.append(np.int32(temp2))
         elif opcodeint == 47:
             temp = np.int8(self.machinestate.Linear_Memory[0][int(immediates[1]):int(immediates[1] + 2)])
             temp2 = temp & 0x0000ffff
-            self.machinestate.append(np.uint32(tmep2))
+            self.machinestate.append(np.uint32(temp2))
         elif opcodeint == 48:
             temp = np.int8(self.machinestate.Linear_Memory[0][int(immediates[1])])
             temp2 = (temp & 0x000000000000007f) | ((temp & 0x80) << 56)
-            self.machinestate.append(np.int64(tmep2))
+            self.machinestate.append(np.int64(temp2))
         elif opcodeint == 49:
             temp = np.uint8(self.machinestate.Linear_Memory[0][int(immediates[1])])
-            self.machinestate.append(np.uint64(tmep))
+            self.machinestate.append(np.uint64(temp))
         elif opcodeint == 50:
             temp = np.int8(self.machinestate.Linear_Memory[0][int(immediates[1]):int(immediates[1] + 2)])
             temp2 = (temp & 0x0000000000007fff) | ((temp & 0x8000) << 48)
-            self.machinestate.append(np.int64(tmep2))
+            self.machinestate.append(np.int64(temp2))
         elif opcodeint == 51:
             temp = np.uint8(self.machinestate.Linear_Memory[0][int(immediates[1]):int(immediates[1] + 2)])
-            self.machinestate.append(np.uint64(tmep))
+            self.machinestate.append(np.uint64(temp))
         elif opcodeint == 52:
             temp = np.int8(self.machinestate.Linear_Memory[0][int(immediates[1]):int(immediates[1] + 4)])
             temp2 = (temp & 0x000000007fffffff) | ((temp & 0x80000000) << 32)
-            self.machinestate.append(np.int64(tmep2))
+            self.machinestate.append(np.int64(temp2))
         elif opcodeint == 53:
             temp = np.uint8(self.machinestate.Linear_Memory[0][int(immediates[1]):int(immediates[1] + 4)])
-            self.machinestate.append(np.uint64(tmep))
+            self.machinestate.append(np.uint64(temp))
         else:
             raise Exception(Colors.red + 'invalid load instruction.' + Colors.ENDC)
 
@@ -623,8 +622,8 @@ class Execute(): # pragma: no cover
             raise Exception(Colors.red + 'invalid ge_u instruction' + Colors.ENDC)
 
     def run_lt(self, opcodeint, immediates):
-        val2 = self.machinestate.Stack_Omni.pop()
-        val1 = self.machinestate.Stack_Omni.pop()
+        v2 = self.machinestate.Stack_Omni.pop()
+        v1 = self.machinestate.Stack_Omni.pop()
         if opcodeint == 93:
             if np.float32(v1) < np.float32(v2):
                 self.machinestate.Stack_Omni.append(1)
@@ -639,8 +638,8 @@ class Execute(): # pragma: no cover
             raise Exception(Colors.red + 'invalid lt instruction' + Colors.ENDC)
 
     def run_gt(self, opcodeint, immediates):
-        val2 = self.machinestate.Stack_Omni.pop()
-        val1 = self.machinestate.Stack_Omni.pop()
+        v2 = self.machinestate.Stack_Omni.pop()
+        v1 = self.machinestate.Stack_Omni.pop()
         if opcodeint == 94:
             if np.float32(v1) > np.float32(v2):
                 self.machinestate.Stack_Omni.append(1)
@@ -655,8 +654,8 @@ class Execute(): # pragma: no cover
             raise Exception(Colors.red + 'invalid gt instruction' + Colors.ENDC)
 
     def run_le(self, opcodeint, immediates):
-        val2 = self.machinestate.Stack_Omni.pop()
-        val1 = self.machinestate.Stack_Omni.pop()
+        v2 = self.machinestate.Stack_Omni.pop()
+        v1 = self.machinestate.Stack_Omni.pop()
         if opcodeint == 95:
             if np.float32(v1) <= np.float32(v2):
                 self.machinestate.Stack_Omni.append(1)
@@ -671,8 +670,8 @@ class Execute(): # pragma: no cover
             raise Exception(Colors.red + 'invalid le instruction' + Colors.ENDC)
 
     def run_ge(self, opcodeint, immediates):
-        val2 = self.machinestate.Stack_Omni.pop()
-        val1 = self.machinestate.Stack_Omni.pop()
+        v2 = self.machinestate.Stack_Omni.pop()
+        v1 = self.machinestate.Stack_Omni.pop()
         if opcodeint == 96:
             if np.float32(v1) >= np.float32(v2):
                 self.machinestate.Stack_Omni.append(1)
@@ -687,7 +686,7 @@ class Execute(): # pragma: no cover
             raise Exception(Colors.red + 'invalid ge instruction' + Colors.ENDC)
 
     def run_clz(self, opcodeint, immediates):
-        val1 = self.machinestate.Stack_Omni.pop()
+        val = self.machinestate.Stack_Omni.pop()
         if opcodeint == 103:
             self.machinestate.Stack_Omni.append(clz(val, 'uint32'))
         elif opcodeint == 121:
@@ -696,7 +695,7 @@ class Execute(): # pragma: no cover
             raise Exception(Colors.red + 'invalid clz instruction' + Colors.ENDC)
 
     def run_ctz(self, opcodeint, immediates):
-        val1 = self.machinestate.Stack_Omni.pop()
+        val = self.machinestate.Stack_Omni.pop()
         if opcodeint == 104:
             self.machinestate.Stack_Omni.append(ctz(val, 'uint32'))
         elif opcodeint == 122:
@@ -705,7 +704,7 @@ class Execute(): # pragma: no cover
             raise Exception(Colors.red + 'invalid ctz instruction' + Colors.ENDC)
 
     def run_popcnt(self, opcodeint, immediates):
-        val1 = self.machinestate.Stack_Omni.pop()
+        val = self.machinestate.Stack_Omni.pop()
         if opcodeint == 105:
             self.machinestate.Stack_Omni.append(pop_cnt(val, 'uint32'))
         elif opcodeint == 123:
@@ -924,8 +923,8 @@ class Execute(): # pragma: no cover
             raise Exception(Colors.red + 'invalid sqrt instruction' + Colors.ENDC)
 
     def run_div(self, opcodeint, immediates):
-        val2 = self.machinestate.Stack_Omni.pop()
-        val1 = self.machinestate.Stack_Omni.pop()
+        v2 = self.machinestate.Stack_Omni.pop()
+        v1 = self.machinestate.Stack_Omni.pop()
         if opcodeint == 149:
             self.machinestate.Stack_Omni.append(v1 / v2)
         else:

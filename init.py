@@ -1,8 +1,7 @@
-from utils import Colors, init_interpret, ParseFlags
+from utils import Colors, init_interpret
 from opcodes import WASM_OP_Code
-from section_structs import Code_Section, Func_Body, WASM_Ins, Resizable_Limits, Memory_Section
+from section_structs import Func_Body, WASM_Ins, Resizable_Limits, Memory_Section
 from execute import *
-import datetime as dti
 import os
 import sys
 import signal
@@ -196,7 +195,7 @@ class TBInit():
             self.module.memory_section = Memory_Section()
             self.module.memory_section.memory_types = [rsz_limits]
             self.module.memory_section.count = 1
-        for iter in self.module.memory_section.memory_types:
+        for _ in self.module.memory_section.memory_types:
             self.machinestate.Linear_Memory.append(bytearray(
                 WASM_OP_Code.PAGE_SIZE))
         if self.module.data_section is not None:
@@ -214,13 +213,14 @@ class TBInit():
 # WIP-holds the run-rime data structures for a wasm machine
 class RTE():
     def __init__(self):
-        Stack_Control_Flow = list()
-        Stack_Value = list()
-        Vector_Locals = list()
-        Current_Position = int()
-        Local_Stacks = list()
+        #Stack_Control_Flow = list()
+        #Stack_Value = list()
+        #Vector_Locals = list()
+        #Current_Position = int()
+        #Local_Stacks = list()
+        pass
 
-    def genFuncLocalStack(func_body):
+    def genFuncLocalStack(self, func_body):
         pass
 
 
@@ -374,12 +374,12 @@ class VM():
 # a wrapper class for VM. it timeouts instructions that take too long to
 # execute.
 class Judicator():
-    def __int__(self, op_time_table, module):
+    def __init__(self, op_time_table, module):
         self.op_time_table = op_time_table
         self.vm = VM(modules)
         self.vm.getStartFunctionBody()
 
-    def overseer():
+    def overseer(self):
         # @DEVI- forking introduces a new source of non-determinism
         pid = os.fork()
         # child process
@@ -403,7 +403,7 @@ class Judicator():
         signal.signal(signal.SIGALRM, self.to_sighandler)
 
     def set_alarm(t):
-        signal.alaram(t)
+        signal.alarm(t)
 
     def to_sighandler(signum, frame):
         print(Colors.red + "execution time out..." + Colors.ENDC)

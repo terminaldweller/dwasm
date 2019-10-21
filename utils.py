@@ -141,14 +141,14 @@ def Read(section_byte, offset, kind):
                 break
 
         return_list = LEB128UnsignedDecode(operand)
-        operand = []
+        #operand = []
     elif kind == 'uint8' or kind == 'uint16' or kind == 'uint32' or kind == 'uint64':
         byte = section_byte[offset: offset + TypeDic[kind]]
         read_bytes += TypeDic[kind]
         offset += TypeDic[kind]
         operand.append(byte)
         return_list = int.from_bytes(operand[0], byteorder='little', signed=False)
-        operand = []
+        #operand = []
     elif kind == 'varint1' or kind == 'varint7' or kind == 'varint32' or kind == 'varint64':
         while True:
             byte = int(section_byte[offset])
@@ -164,7 +164,7 @@ def Read(section_byte, offset, kind):
                 # we have read the lasy byte of the operand
                 break
         return_list = LEB128SignedDecode(operand)
-        operand = []
+        #operand = []
     return return_list, offset, read_bytes
 
 def ror(val, type_length, rot_size):
@@ -193,7 +193,7 @@ def reinterpreti64tof64(val):
 def clz(val, _type):
     cnt = int()
     if _type == 'uint32':
-        bits = np.uint32(val)
+        #bits = np.uint32(val)
         power = 31
         while power > -1:
             if val & 2**power == 0:
@@ -202,7 +202,7 @@ def clz(val, _type):
                 break
             power -= 1
     elif _type == 'uint64':
-        bits = bin(np.uint64(val))
+        #bits = bin(np.uint64(val))
         power = 63
         while power > -1:
             if val & 2**power == 0:
@@ -220,7 +220,7 @@ def ctz(val, _type):
     cnt = int()
     power = int()
     if _type == 'uint32':
-        bits = np.uint32(val)
+        #bits = np.uint32(val)
         while power < 32:
             if val & 2**power == 0:
                 cnt += 1
@@ -228,7 +228,7 @@ def ctz(val, _type):
                 break
             power += 1
     elif _type == 'uint64':
-        bits = bin(np.uint64(val))
+        #bits = bin(np.uint64(val))
         while power < 64:
             if val & 2**power == 0:
                 cnt += 1
@@ -244,13 +244,13 @@ def pop_cnt(val, _type):
     cnt = int()
     power = int()
     if _type == 'uint32':
-        bits = np.uint32(val)
+        #bits = np.uint32(val)
         while power < 32:
             if val & 2**power != 0:
                 cnt += 1
             power += 1
     elif _type == 'uint64':
-        bits = bin(np.uint64(val))
+        #bits = bin(np.uint64(val))
         while power < 64:
             if val & 2**power != 0:
                 cnt += 1

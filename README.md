@@ -1,3 +1,6 @@
+
+[![Total alerts](https://img.shields.io/lgtm/alerts/g/bloodstalker/dwasm.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/bloodstalker/dwasm/alerts/)
+
 # dwasm
 dwasm is a WASM dump tool.<br/>
 
