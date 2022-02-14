@@ -1,6 +1,11 @@
 from utils import Colors, init_interpret
 from opcodes import WASM_OP_Code
-from section_structs import Func_Body, WASM_Ins, Resizable_Limits, Memory_Section
+from section_structs import (
+    Func_Body,
+    WASM_Ins,
+    Resizable_Limits,
+    Memory_Section,
+)
 from execute import *
 import os
 import sys
@@ -8,7 +13,7 @@ import signal
 
 
 # McCabe cyclomatic complexity metric
-class Metric():
+class Metric:
     def __init__(self, code_section):
         self.code_section = code_section
         self.metric = []
@@ -21,9 +26,14 @@ class Metric():
         for funcs in self.code_section.func_bodies:
             for ins in funcs.code:
                 soc += 1
-                #print(repr(ins.opcodeint))
-                if ins.opcodeint == 4 or ins.opcodeint == 5 or ins.opcodeint == 12 \
-                    or ins.opcodeint == 13 or ins.opcodeint == 14:
+                # print(repr(ins.opcodeint))
+                if (
+                    ins.opcodeint == 4
+                    or ins.opcodeint == 5
+                    or ins.opcodeint == 12
+                    or ins.opcodeint == 13
+                    or ins.opcodeint == 14
+                ):
                     Nodes += 2
                     Edges += 4
                 elif ins.opcode == 3:
@@ -51,26 +61,39 @@ def DumpLinearMems(linear_memories, threshold):
     strrep = []
     linmem_cnt = int()
     for lin_mem in linear_memories:
-        print('-----------------------------------------')
-        print(Colors.blue + Colors.BOLD + 'Linear Memory '+ repr(linmem_cnt)+ ' :' + Colors.ENDC)
+        print("-----------------------------------------")
+        print(
+            Colors.blue
+            + Colors.BOLD
+            + "Linear Memory "
+            + repr(linmem_cnt)
+            + " :"
+            + Colors.ENDC
+        )
         for byte in lin_mem:
             if count >= threshold:
                 break
-            if count%16 == 0:
+            if count % 16 == 0:
                 for ch in strrep:
                     # @DEVI-line feed messes the pretty format up
                     if ord(ch) != 10:
-                        print(Colors.green + ' ' + ch + Colors.ENDC, end = '')
+                        print(Colors.green + " " + ch + Colors.ENDC, end="")
                     else:
                         pass
                 print()
                 strrep = []
-                print(Colors.cyan + hex(count), ':\t' + Colors.ENDC, end='')
+                print(Colors.cyan + hex(count), ":\t" + Colors.ENDC, end="")
                 strrep.append(str(chr(byte)))
-                print(Colors.blue + format(byte, '02x') + ' ' + Colors.ENDC, end='')
+                print(
+                    Colors.blue + format(byte, "02x") + " " + Colors.ENDC,
+                    end="",
+                )
             else:
                 strrep += str(chr(byte))
-                print(Colors.blue + format(byte, '02x') + ' ' + Colors.ENDC, end='')
+                print(
+                    Colors.blue + format(byte, "02x") + " " + Colors.ENDC,
+                    end="",
+                )
             count += 1
         count = 0
     print()
@@ -78,30 +101,30 @@ def DumpLinearMems(linear_memories, threshold):
 
 # handles the debug options --idxspc. dumps the index spaces.
 def DumpIndexSpaces(machinestate):
-    print('-----------------------------------------')
-    print(Colors.green + 'Function Index Space: ' + Colors.ENDC)
+    print("-----------------------------------------")
+    print(Colors.green + "Function Index Space: " + Colors.ENDC)
     for iter in machinestate.Index_Space_Function:
         print(Colors.blue + repr(iter) + Colors.ENDC)
 
-    print('-----------------------------------------')
-    print(Colors.green + 'Globa Index Space: ' + Colors.ENDC)
+    print("-----------------------------------------")
+    print(Colors.green + "Globa Index Space: " + Colors.ENDC)
     for iter in machinestate.Index_Space_Global:
         print(Colors.blue + repr(iter) + Colors.ENDC)
 
-    print('-----------------------------------------')
-    print(Colors.green + 'Linear Memory Index Space: ' + Colors.ENDC)
+    print("-----------------------------------------")
+    print(Colors.green + "Linear Memory Index Space: " + Colors.ENDC)
     for iter in machinestate.Index_Space_Linear:
         print(Colors.blue + repr(iter) + Colors.ENDC)
 
-    print('-----------------------------------------')
-    print(Colors.green + 'Table Index Space: ' + Colors.ENDC)
+    print("-----------------------------------------")
+    print(Colors.green + "Table Index Space: " + Colors.ENDC)
     for iter in machinestate.Index_Space_Table:
         print(Colors.blue + repr(iter) + Colors.ENDC)
-    print('-----------------------------------------')
+    print("-----------------------------------------")
 
 
 # WIP-the Truebit Machine class
-class TBMachine():
+class TBMachine:
     def __init__(self):
         # bytearray of size PAGE_SIZE
         self.Linear_Memory = []
@@ -121,7 +144,7 @@ class TBMachine():
 
 
 # handles the initialization of the WASM machine
-class TBInit():
+class TBInit:
     def __init__(self, module, machinestate):
         self.module = module
         self.machinestate = machinestate
@@ -196,28 +219,31 @@ class TBInit():
             self.module.memory_section.memory_types = [rsz_limits]
             self.module.memory_section.count = 1
         for _ in self.module.memory_section.memory_types:
-            self.machinestate.Linear_Memory.append(bytearray(
-                WASM_OP_Code.PAGE_SIZE))
+            self.machinestate.Linear_Memory.append(
+                bytearray(WASM_OP_Code.PAGE_SIZE)
+            )
         if self.module.data_section is not None:
             for iter in self.module.data_section.data_segments:
                 count = int()
                 for byte in iter.data:
-                    self.machinestate.Linear_Memory[iter.index][init_interpret(iter.offset) + count] = byte
+                    self.machinestate.Linear_Memory[iter.index][
+                        init_interpret(iter.offset) + count
+                    ] = byte
                     count += 1
 
     # returns the machinestate
     def getInits(self):
-        return(self.machinestate)
+        return self.machinestate
 
 
 # WIP-holds the run-rime data structures for a wasm machine
-class RTE():
+class RTE:
     def __init__(self):
-        #Stack_Control_Flow = list()
-        #Stack_Value = list()
-        #Vector_Locals = list()
-        #Current_Position = int()
-        #Local_Stacks = list()
+        # Stack_Control_Flow = list()
+        # Stack_Value = list()
+        # Vector_Locals = list()
+        # Current_Position = int()
+        # Local_Stacks = list()
         pass
 
     def genFuncLocalStack(self, func_body):
@@ -225,7 +251,7 @@ class RTE():
 
 
 # palceholder for the class that holds the validation functions
-class ModuleValidation():
+class ModuleValidation:
     def __init__(self, module):
         self.module = module
 
@@ -279,12 +305,12 @@ class ModuleValidation():
         self.DataSection()
         self.TBCustom()
 
-        return(True)
+        return True
 
 
 # a convinience class that handles the initialization of the wasm machine and
 # interpretation of the code.
-class VM():
+class VM:
     def __init__(self, modules):
         self.modules = modules
         self.machinestate = TBMachine()
@@ -303,7 +329,7 @@ class VM():
         self.parseflags = parseflags
 
     def getState(self):
-        return(self.machinestate)
+        return self.machinestate
 
     def initLocalIndexSpace(self, local_count):
         for i in range(0, local_count):
@@ -312,33 +338,64 @@ class VM():
     def getStartFunctionIndex(self):
         if self.modules[0].start_section is None:
             if self.parseflags.entry is None:
-                raise Exception(Colors.red + "module does not have a start section. no function index was provided with the --entry option.quitting..." + Colors.ENDC)
+                raise Exception(
+                    Colors.red
+                    + "module does not have a start section. no function index was provided with the --entry option.quitting..."
+                    + Colors.ENDC
+                )
             else:
                 start_index = int(self.parseflags.entry)
         else:
-            print(Colors.green + "found start section: " + Colors.ENDC, end = '')
+            print(Colors.green + "found start section: " + Colors.ENDC, end="")
             start_index = self.modules[0].start_section.function_section_index
 
-        print(Colors.blue + Colors.BOLD + "running function at index " + repr(start_index) + Colors.ENDC)
-        if (start_index > len(self.modules[0].code_section.func_bodies) - 1):
-            raise Exception(Colors.red + "invalid function index: the function index does not exist." + Colors.ENDC)
-        return(start_index)
+        print(
+            Colors.blue
+            + Colors.BOLD
+            + "running function at index "
+            + repr(start_index)
+            + Colors.ENDC
+        )
+        if start_index > len(self.modules[0].code_section.func_bodies) - 1:
+            raise Exception(
+                Colors.red
+                + "invalid function index: the function index does not exist."
+                + Colors.ENDC
+            )
+        return start_index
 
     def getStartFunctionBody(self):
         start_index = self.getStartFunctionIndex()
         if isinstance(start_index, int):
-            self.start_function = self.modules[0].code_section.func_bodies[start_index]
+            self.start_function = self.modules[0].code_section.func_bodies[
+                start_index
+            ]
         elif isinstance(start_index, str):
             # we have to import the function from another module/library. we
             # assume sys calls are not present.:w
             pass
         else:
-            raise Exception(Colors.red + "invalid entry for start function index" + Colors.ENDC)
+            raise Exception(
+                Colors.red
+                + "invalid entry for start function index"
+                + Colors.ENDC
+            )
 
     def execute(self):
-        print(Colors.blue + Colors.BOLD + 'running module with code: ' + Colors.ENDC)
+        print(
+            Colors.blue
+            + Colors.BOLD
+            + "running module with code: "
+            + Colors.ENDC
+        )
         for ins in self.start_function.code:
-            print(Colors.purple + repr(ins.opcode) + ' ' + repr(ins.operands) + Colors.ENDC)
+            print(
+                Colors.purple
+                + repr(ins.opcode)
+                + " "
+                + repr(ins.operands)
+                + Colors.ENDC
+            )
         for ins in self.start_function.code:
             self.executewasm.getInstruction(ins.opcodeint, ins.operands)
             self.executewasm.callExecuteMethod()
@@ -351,16 +408,33 @@ class VM():
                 self.executewasm.chargeGasMem(mem.initial)
 
             self.metric.mccabe()
-            print(Colors.red + "mccabe: " + repr(self.metric.getMcCabe()) + Colors.ENDC)
-            print(Colors.red + "soc: " + repr(self.metric.getSOC()) + Colors.ENDC)
+            print(
+                Colors.red
+                + "mccabe: "
+                + repr(self.metric.getMcCabe())
+                + Colors.ENDC
+            )
+            print(
+                Colors.red + "soc: " + repr(self.metric.getSOC()) + Colors.ENDC
+            )
 
     # post-execution hook
     def endHook(self):
         if self.parseflags.gas:
             self.totGas = self.executewasm.getOPGas()
-            print(Colors.red + "total gas cost: " + repr(self.totGas) + Colors.ENDC)
+            print(
+                Colors.red
+                + "total gas cost: "
+                + repr(self.totGas)
+                + Colors.ENDC
+            )
         if self.machinestate.Stack_Omni:
-            print(Colors.green + "stack top: " + repr(self.machinestate.Stack_Omni.pop()) + Colors.ENDC)
+            print(
+                Colors.green
+                + "stack top: "
+                + repr(self.machinestate.Stack_Omni.pop())
+                + Colors.ENDC
+            )
 
     # a convinience method
     def run(self):
@@ -373,7 +447,7 @@ class VM():
 
 # a wrapper class for VM. it timeouts instructions that take too long to
 # execute.
-class Judicator():
+class Judicator:
     def __init__(self, op_time_table, module):
         self.op_time_table = op_time_table
         self.vm = VM(modules)
@@ -384,20 +458,22 @@ class Judicator():
         pid = os.fork()
         # child process
         if pid == 0:
-            sys.stdout = open('./jstdout', 'w')
-            sys.stderr = open('./jstderr', 'w')
+            sys.stdout = open("./jstdout", "w")
+            sys.stderr = open("./jstderr", "w")
             self.vm.execute()
             sys.exit()
         # parent process
         if pid > 0:
             cpid, status = os.waitpid(pid, 0)
             if status == 0:
-                print('overseer child exited successfully.')
+                print("overseer child exited successfully.")
             else:
-                print('overseer child exited with non-zero.')
+                print("overseer child exited with non-zero.")
         # pid < 0
         else:
-            raise Exception(Colors.red + 'could not fork judicator overseer.' + Colors.ENDC)
+            raise Exception(
+                Colors.red + "could not fork judicator overseer." + Colors.ENDC
+            )
 
     def setup(self):
         signal.signal(signal.SIGALRM, self.to_sighandler)

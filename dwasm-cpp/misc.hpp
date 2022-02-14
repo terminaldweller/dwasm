@@ -16,21 +16,23 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.*/
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301,
+USA.*/
 /**********************************************************************************************************************/
 #include <cstddef>
 #include <vector>
 /**********************************************************************************************************************/
-int read_header(std::ifstream& wasm) {
+int read_header(std::ifstream &wasm) {
   char head[4];
   wasm.read(head, sizeof(uint32_t));
   std::cout << head[0] << head[1] << head[2] << head[3] << "\n";
   wasm.read(head, sizeof(uint32_t));
-  std::cout << (int)(head[0]) << (int)(head[1]) << (int)(head[2]) << (int)(head[3]) << "\n";
+  std::cout << (int)(head[0]) << (int)(head[1]) << (int)(head[2])
+            << (int)(head[3]) << "\n";
   return 0;
 }
 
-int dump_file(std::ifstream& wasm) {
+int dump_file(std::ifstream &wasm) {
   while (wasm) {
     std::ios::pos_type before = wasm.tellg();
     uint8_t x;
@@ -47,4 +49,3 @@ std::vector<unsigned char> leb128_u_e() {}
 std::vector<unsigned char> leb128_s_e() {}
 /**********************************************************************************************************************/
 /*last line intentionally left blank.*/
-
